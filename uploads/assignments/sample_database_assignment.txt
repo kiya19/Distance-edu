@@ -1,0 +1,4 @@
+Sample assignment question file.
+
+Task: Explain how a relational database can support a distance education management system.
+

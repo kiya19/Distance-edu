@@ -1,0 +1,4 @@
+Sample student submission file.
+
+This is a seeded answer used for the instructor grading demonstration.
+

@@ -1,0 +1,4 @@
+Sample module file for Database Systems.
+
+This file is included so the demo download workflow works immediately after import.
+

@@ -1,0 +1,33 @@
+services:
+  - type: web
+    name: nac-dems
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: starter          # Free plan can't attach a persistent disk — see notes below
+    region: oregon          # change to whichever region is closest to your users
+    healthCheckPath: /
+    disk:
+      name: nac-dems-storage
+      mountPath: /var/www/html/storage
+      sizeGB: 1
+    envVars:
+      # Empty string = app is served from the domain root (yourapp.onrender.com/)
+      - key: BASE_URL
+        value: ""
+      # Where uploaded files + the fallback SQLite DB live — inside the
+      # persistent disk mounted above, so they survive restarts/redeploys.
+      - key: UPLOAD_PATH
+        value: /var/www/html/storage/uploads
+      - key: SQLITE_PATH
+        value: /var/www/html/storage/dems.sqlite
+
+      # ── Optional: only add these if you're connecting a real MySQL   ──
+      # ── database instead of the built-in SQLite fallback.            ──
+      # - key: DB_HOST
+      #   value: your-mysql-host
+      # - key: DB_NAME
+      #   value: dems
+      # - key: DB_USER
+      #   value: your-username
+      # - key: DB_PASS
+      #   sync: false        # set the actual value in the Render dashboard, not here

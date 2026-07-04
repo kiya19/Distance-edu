@@ -1,0 +1,7 @@
+.git
+.gitignore
+.gitattributes
+*.md
+dems.exe
+dems_launcher.cs
+database/dems.sqlite

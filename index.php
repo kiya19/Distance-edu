@@ -267,6 +267,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     pointer-events: auto;
   }
 
+  /* Ensure form controls are explicitly interactable in case compositing layers overlap */
+  .login-right .form-input,
+  .login-right .login-btn {
+    position: relative; z-index: 10; pointer-events: auto;
+  }
+
   .login-logo-wrap {
     display: flex; flex-direction: column; align-items: center;
     margin-bottom: 26px; gap: 10px;

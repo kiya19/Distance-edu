@@ -4,8 +4,16 @@ $user = require_role(['administrator', 'department_head', 'registrar', 'instruct
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     verify_csrf();
-    require_role(['administrator', 'department_head']);
+    // Only administrators, department heads and instructors may create/update courses
+    if (!role_is(['administrator', 'department_head', 'instructor'])) {
+        flash('danger', t('not_authorized', 'You are not authorized to perform that action.'));
+        redirect('courses.php');
+    }
     $instructorId = $_POST['instructor_id'] !== '' ? (int) $_POST['instructor_id'] : null;
+    // If an instructor is creating the course and didn't pick an instructor, assign to current user
+    if ($instructorId === null && role_is('instructor')) {
+        $instructorId = $user['id'];
+    }
     $code = trim($_POST['code']);
 
     $existing = db()->prepare('SELECT id FROM courses WHERE code = ?');
@@ -35,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $instructorId,
         ]);
     }
-    flash('success', 'Course saved.');
+    flash('success', t('course_saved', 'Course saved.'));
     redirect('courses.php');
 }
 
@@ -49,7 +57,7 @@ $instructorUsers = db()->query(
 
 render_header('Course Management');
 ?>
-<?php if (role_is(['administrator', 'department_head'])): ?>
+<?php if (role_is(['administrator', 'department_head', 'instructor'])): ?>
 <section class="panel">
     <h2>Register or Assign Course</h2>
     <form method="post">

@@ -129,6 +129,8 @@ CREATE TABLE payments (
     amount DECIMAL(10,2) NOT NULL,
     status ENUM('pending','paid','blocked') NOT NULL DEFAULT 'pending',
     receipt_no VARCHAR(80) NULL,
+    receipt_path VARCHAR(255) NULL,
+    receipt_uploaded_at TIMESTAMP NULL DEFAULT NULL,
     verified_by INT NULL,
     paid_at DATE NULL,
     updated_at TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,

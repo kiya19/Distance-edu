@@ -259,6 +259,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     display: flex; flex-direction: column;
     justify-content: center; padding: 48px 40px;
     overflow-y: auto;
+    /* Ensure the right panel sits above decorative left-panel elements on small screens */
+    position: relative; z-index: 3;
   }
 
   .login-logo-wrap {

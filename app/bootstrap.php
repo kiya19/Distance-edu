@@ -4,6 +4,17 @@ declare(strict_types=1);
 
 session_start();
 
+// Internationalization (i18n) - simple key-based loader
+$lang = $_GET['lang'] ?? $_SESSION['lang'] ?? 'en';
+$lang = in_array($lang, ['en', 'am']) ? $lang : 'en';
+$_SESSION['lang'] = $lang;
+$langFile = __DIR__ . '/lang/' . $lang . '.php';
+$translations = file_exists($langFile) ? (require $langFile) : [];
+function t(string $key, string $default = '') {
+    global $translations;
+    return $translations[$key] ?? $default;
+}
+
 $config = require __DIR__ . '/../config/database.php';
 
 function app_config(string $key, $default = null)

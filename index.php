@@ -74,6 +74,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     padding: 44px 44px 36px;
     position: relative;
     overflow: hidden;
+    /* Avoid capturing pointer events which can overlap the login panel on small screens */
+    pointer-events: none;
   }
 
   /* Animated background rings */
@@ -259,6 +261,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     display: flex; flex-direction: column;
     justify-content: center; padding: 48px 40px;
     overflow-y: auto;
+    /* Ensure the right panel sits above decorative left-panel elements on small screens */
+    position: relative; z-index: 3;
+    /* Re-enable pointer events for form controls */
+    pointer-events: auto;
+  }
+
+  /* Ensure form controls are explicitly interactable in case compositing layers overlap */
+  .login-right .form-input,
+  .login-right .login-btn {
+    position: relative; z-index: 10; pointer-events: auto;
   }
 
   .login-logo-wrap {

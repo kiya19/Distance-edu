@@ -18,16 +18,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $user['id'],
             (int) $_POST['submission_id'],
         ]);
-        flash('success', 'Grade recorded.');
+        flash('success', t('grade_recorded', 'Grade recorded.'));
     } elseif ($action === 'approve') {
-        require_role(['administrator', 'department_head']);
-        $stmt = db()->prepare(
-            'UPDATE submissions
-             SET approval_status = "approved", approved_by = ?, approved_at = ?
-             WHERE id = ?'
-        );
-        $stmt->execute([$user['id'], date('Y-m-d H:i:s'), (int) $_POST['submission_id']]);
-        flash('success', 'Grade report approved.');
+        // Only instructors may approve grade reports; verify they own the course for this submission
+        require_role(['instructor']);
+        $submissionId = (int) $_POST['submission_id'];
+        $ownerStmt = db()->prepare('SELECT c.instructor_id FROM submissions s JOIN assignments a ON a.id = s.assignment_id JOIN courses c ON c.id = a.course_id WHERE s.id = ?');
+        $ownerStmt->execute([$submissionId]);
+        $owner = $ownerStmt->fetch();
+        if (!$owner || (int) $owner['instructor_id'] !== (int) $user['id']) {
+            flash('danger', t('not_authorized', 'You are not authorized to approve this submission.'));
+        } else {
+            $stmt = db()->prepare(
+                'UPDATE submissions
+                 SET approval_status = "approved", approved_by = ?, approved_at = ?
+                 WHERE id = ?'
+            );
+            $stmt->execute([$user['id'], date('Y-m-d H:i:s'), $submissionId]);
+            flash('success', t('grade_approved', 'Grade report approved.'));
+        }
     }
     redirect('grades.php');
 }
@@ -91,7 +100,7 @@ render_header('Grade Management');
                                 <button type="submit">Save Grade</button>
                             </form>
                         <?php endif; ?>
-                        <?php if (role_is(['administrator', 'department_head']) && $row['approval_status'] !== 'approved'): ?>
+                        <?php if (role_is('instructor') && $row['approval_status'] !== 'approved'): ?>
                             <form method="post" style="margin-top:8px">
                                 <?= csrf_field() ?>
                                 <input type="hidden" name="action" value="approve">
